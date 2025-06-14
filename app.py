@@ -29,7 +29,7 @@ def execute_command(command):
 
         # Run the compiled program
         run_result = subprocess.run(
-            ["orderbook.exe"],
+            ["./orderbook"],
             capture_output=True,
             text=True
         )
