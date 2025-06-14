@@ -502,27 +502,40 @@ with tab1:
     else:  # CLEAR
         st.info("This will clear all orders and logs. Admin password required.")
         password = st.text_input("Admin Password", type="password", key="admin_password")
-        
-        # Add password verification when password is entered
+        correct_password = st.secrets.admin.password
+        # Validate the password
         if password:
-            try:
-                with open("config.toml", "r") as f:
-                    for line in f:
-                        if line.find("password = ") != -1:
-                            correct_password = line.split('"')[1]
-                            if password == correct_password:
-                                st.success("Password correct! You can execute CLEAR command.")
-                                command = f"CLEAR {password}"
-                            else:
-                                st.error("Invalid password!")
-                                command = None
-                            break
-            except FileNotFoundError:
-                st.error("Config file not found!")
+            if password == correct_password:
+                st.success("Password correct! You can execute CLEAR command.")
+                command = f"CLEAR {password}"
+            else:
+                st.error("Invalid password!")
                 command = None
         else:
             command = None
             st.warning("Please enter admin password")
+
+        # Add password verification when password is entered
+        # if password:
+        #     try:
+        #         with open("config.toml", "r") as f:
+        #             for line in f:
+        #                 if line.find("password = ") != -1:
+        #                     correct_password = line.split('"')[1]
+        #                     if password == correct_password:
+        #                         st.success("Password correct! You can execute CLEAR command.")
+        #                         command = f"CLEAR {password}"
+        #                     else:
+        #                         st.error("Invalid password!")
+        #                         command = None
+        #                     break
+        #     except FileNotFoundError:
+        #         st.error("Config file not found!")
+        #         command = None
+        # else:
+        #     command = None
+        #     st.warning("Please enter admin password")
+    
 
     # Update the command execution section
     if st.button("Execute Command", disabled=(command_type == "CLEAR" and command is None)):
