@@ -15,12 +15,7 @@ def execute_command(command):
         with open("command.txt", "w") as f:
             f.write(command)
 
-        exe_exists = os.path.exists("orderbook.exe")
-
-        # if exe_exists:
-        #     exe_mtime = os.path.getmtime("orderbook.exe")
-        #     cpp_mtime = os.path.getmtime("main.cpp")
-        #     needs_compilation = cpp_mtime > exe_mtime
+        exe_exists = os.path.exists("./orderbook")
 
         # Compile if needed
         if not exe_exists:
@@ -181,49 +176,6 @@ with tab2:
         st.altair_chart(chart, use_container_width=True)
     else:
         st.info("No depth data available.")
-
-    # Create default data if no depth data exists
-    # if not buy_depth and not sell_depth:
-    #     df_depth = pd.DataFrame({
-    #         "Price": [1],  # Use a dummy price instead of 0
-    #         "Type": ["Buy Quantity"],
-    #         "Quantity": [0]
-    #     })
-    # else:
-    #     prices = sorted(set(buy_depth.keys()) | set(sell_depth.keys()))
-    #     buy_data = [(p, "Buy Quantity", buy_depth.get(p, 0)) for p in prices]
-    #     sell_data = [(p, "Sell Quantity", sell_depth.get(p, 0)) for p in prices]
-        
-    #     df_depth = pd.DataFrame(buy_data + sell_data, columns=["Price", "Type", "Quantity"])
-
-    # # Ensure proper data types
-    # df_depth["Price"] = pd.to_numeric(df_depth["Price"])
-    # df_depth["Quantity"] = pd.to_numeric(df_depth["Quantity"])
-    # df_depth["Type"] = df_depth["Type"].astype(str)
-
-    # # Create chart with explicit data types
-    # chart = alt.Chart(df_depth).mark_bar().encode(
-    #     x=alt.X("Price:Q", title="Price", scale=alt.Scale(zero=False)),
-    #     y=alt.Y("Quantity:Q", title="Quantity"),
-    #     color=alt.Color(
-    #         "Type:N",
-    #         scale=alt.Scale(
-    #             domain=["Buy Quantity", "Sell Quantity"],
-    #             range=["green", "red", "gray"]
-    #         )
-    #     ),
-    #     tooltip=[
-    #         alt.Tooltip("Price:Q", format=".2f"),
-    #         alt.Tooltip("Type:N"),
-    #         alt.Tooltip("Quantity:Q", format=",")
-    #     ]
-    # ).properties(
-    #     title="Market Depth",
-    #     width="container",
-    #     height=400
-    # )
-
-    # st.altair_chart(chart, use_container_width=True)
 
      # --- Trades Over Time ---
     trade_df = df[df["Type"].str.upper() == "TRADE"].copy()
@@ -491,10 +443,6 @@ def read_console_output():
     except FileNotFoundError:
         return ""
     
-        # Show console output if it exists
-    # console_output = read_console_output()
-    # if console_output:
-    #     st.code(console_output, language="text")
     
 with tab1: 
     st.header("🎮 Command Input")
@@ -525,8 +473,8 @@ with tab1:
             # Set price to 0 and disable input for MARKET orders
             price = 0 if order_type == "MARKET" else st.number_input(
                 "Price", 
-                min_value=10.0, 
-                step=0.5, 
+                min_value=10, 
+                step=1, 
                 key="place_price",
                 disabled=(order_type == "MARKET")
             )
@@ -548,7 +496,7 @@ with tab1:
             if field == "QTY":
                 value = st.number_input("New Quantity", min_value=1, step=1, key="modify_qty")
             else:
-                value = st.number_input("New Price", min_value=0.0, step=0.1, key="modify_price")
+                value = st.number_input("New Price", min_value=10, step=1, key="modify_price")
         command = f"MODIFY {order_id} {field} {value}"
 
     else:  # CLEAR
